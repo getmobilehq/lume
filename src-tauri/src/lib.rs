@@ -3,6 +3,7 @@ use tauri::{
     tray::TrayIconBuilder,
     AppHandle, Emitter, Manager, WindowEvent,
 };
+use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
 
 /// Reveal the main window and tell the frontend to route to `route`.
 fn navigate(app: &AppHandle, route: &str) {
@@ -13,9 +14,33 @@ fn navigate(app: &AppHandle, route: &str) {
     }
 }
 
+// Hard-coded Week 1 hotkey defaults (⌃⌥R / ⌃⌥L); customisation comes later.
+fn record_toggle_shortcut() -> Shortcut {
+    Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT), Code::KeyR)
+}
+
+fn open_library_shortcut() -> Shortcut {
+    Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT), Code::KeyL)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(
+            tauri_plugin_global_shortcut::Builder::new()
+                .with_handler(|app, shortcut, event| {
+                    if event.state() != ShortcutState::Pressed {
+                        return;
+                    }
+                    if *shortcut == record_toggle_shortcut() {
+                        log::info!("hotkey: record-toggle");
+                        let _ = app.emit("record-toggle", ());
+                    } else if *shortcut == open_library_shortcut() {
+                        navigate(app, "/");
+                    }
+                })
+                .build(),
+        )
         .setup(|app| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(
@@ -42,6 +67,10 @@ pub fn run() {
                     _ => {}
                 })
                 .build(app)?;
+
+            let global_shortcut = app.global_shortcut();
+            global_shortcut.register(record_toggle_shortcut())?;
+            global_shortcut.register(open_library_shortcut())?;
 
             Ok(())
         })
