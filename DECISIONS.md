@@ -236,6 +236,25 @@ Lightweight ADRs. Append-only. Each decision gets a short context, the choice, a
 
 ---
 
+## ADR 014 — API-key storage: Stronghold vault unlocked by a Keychain-held password
+
+**Date:** 2026-05-26
+**Status:** Accepted
+
+**Context:** Invariant #2 requires API keys to live in the Keychain, never on disk in plaintext. `tauri-plugin-stronghold` stores an *encrypted vault file on disk* (IOTA Stronghold), not in the Keychain, and needs a password to unlock. So the real question was where that password comes from.
+
+**Decision:** Generate a random password on first run and store it in the **macOS Keychain** via the `keyring` crate (`apple-native` backend), exposed through the `vault_password` Tauri command. The Stronghold vault (`vault.hold`) is encrypted with it using argon2 (salt at `salt.txt`). The three keys are stored in a Stronghold client `lume`; the settings form loads them on mount and writes them on save. Chosen over deriving the password from a device value (predictable, weaker).
+
+**Consequences / notes:**
+- First Keychain access shows a macOS prompt; "Always Allow" stops it recurring. Unsigned dev builds may re-prompt across rebuilds.
+- The vault is opened once per session (a cached promise in `lib/secrets.ts`) — React's dev double-mount otherwise races two `Stronghold.load`s on the same snapshot and reports "no data present".
+- First Rust command boundary, so this also introduced `LumeError` (thiserror, serialises to its message) per invariant #3.
+- **Path note:** vault/salt live in Tauri's `app_data_dir()` = `~/Library/Application Support/com.getmobilehq.lume/` (bundle identifier), not the `~/Library/Application Support/Lume/` path written in DATA.md/ARCHITECTURE.md. The DB task (`wk1-foundation-db`) must use the same identifier-based dir for consistency, or we override the data dir everywhere.
+
+**Revisit if:** we add Windows (v1.1) — `keyring` needs the `windows-native` backend and the prompt behaviour differs.
+
+---
+
 ## How to add an ADR
 
 Copy the template below, append to the bottom of this file, give it the next number.

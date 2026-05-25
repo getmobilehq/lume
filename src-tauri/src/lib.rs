@@ -1,3 +1,6 @@
+mod commands;
+mod error;
+
 use tauri::{
     menu::{Menu, MenuItem},
     tray::TrayIconBuilder,
@@ -50,6 +53,14 @@ pub fn run() {
                 )?;
             }
 
+            // Stronghold encrypts the API-key vault with an argon2-derived key;
+            // the salt lives next to the vault in the app data dir.
+            let data_dir = app.path().app_data_dir()?;
+            std::fs::create_dir_all(&data_dir)?;
+            let salt_path = data_dir.join("salt.txt");
+            app.handle()
+                .plugin(tauri_plugin_stronghold::Builder::with_argon2(&salt_path).build())?;
+
             let library_i = MenuItem::with_id(app, "library", "Library", true, None::<&str>)?;
             let settings_i = MenuItem::with_id(app, "settings", "Settings", true, None::<&str>)?;
             let quit_i = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
@@ -89,6 +100,7 @@ pub fn run() {
                 }
             }
         })
+        .invoke_handler(tauri::generate_handler![commands::vault_password])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
