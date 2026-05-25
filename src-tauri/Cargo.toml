@@ -1,0 +1,32 @@
+[package]
+name = "lume"
+version = "0.1.0"
+description = "Lume — watch-and-capture knowledge companion"
+authors = ["Joseph Agunbiade"]
+license = ""
+repository = "https://github.com/getmobilehq/lume"
+edition = "2021"
+rust-version = "1.77.2"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "lume_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.6.2", features = [] }
+
+[dependencies]
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+log = "0.4"
+tauri = { version = "2.11.2", features = [] }
+tauri-plugin-log = "2"
+tauri-plugin-global-shortcut = "2.3.1"
+tauri-plugin-sql = { version = "2.4.0", features = ["sqlite"] }
+tauri-plugin-fs = "2.5.1"
+tauri-plugin-store = "2.4.3"
+tauri-plugin-notification = "2.3.3"
+tauri-plugin-stronghold = "2.3.1"
+scap = "0.0.8"

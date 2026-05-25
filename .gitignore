@@ -9,6 +9,10 @@
 node_modules/
 out/
 .next/
+*.tsbuildinfo
+
+# Local editor/agent settings
+.claude/settings.local.json
 
 # Rust / Tauri
 src-tauri/target/

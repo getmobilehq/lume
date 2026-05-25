@@ -12,8 +12,8 @@ Goal: a Tauri 2 + Next.js app that launches, sits in the menu bar, responds to a
 
 ## Done criteria for Week 1
 
-- [ ] Repo bootstrapped per `RUNBOOK.md §2`
-- [ ] `pnpm tauri dev` launches a window
+- [x] Repo bootstrapped per `RUNBOOK.md §2`
+- [x] `pnpm tauri dev` launches a window
 - [ ] Tray icon visible, with menu: Library / Settings / Quit
 - [ ] Window hides on close (does not quit), tray menu re-opens it
 - [ ] Global hotkey `⌃⌥R` registered; emits a `record-toggle` event
@@ -28,28 +28,21 @@ Goal: a Tauri 2 + Next.js app that launches, sits in the menu bar, responds to a
 
 ## Current task (in progress)
 
-**`wk1-foundation-bootstrap`** — bootstrap the repo per RUNBOOK §2.
+**`wk1-foundation-tray`** — implement tray icon and basic menu.
 
-Steps:
-1. Create empty repo, init git
-2. Run all commands in `RUNBOOK.md §2`
-3. Confirm `pnpm tauri dev` opens the default Tauri window
-4. Commit as `chore: bootstrap tauri + next.js scaffold`
-
-Definition of done for THIS task: dev window opens with no errors, baseline committed.
+Done criteria: tray icon visible with menu Library / Settings / Quit; clicking menu items routes correctly.
 
 ---
 
 ## Up next (priority order)
 
-1. `wk1-foundation-tray` — implement tray icon and basic menu
-2. `wk1-foundation-window-hide` — close hides instead of quits
-3. `wk1-foundation-hotkey` — register both global hotkeys and wire events
-4. `wk1-foundation-settings-ui` — settings screen with three API key fields
-5. `wk1-foundation-stronghold` — Keychain-backed storage of keys
-6. `wk1-foundation-db` — SQLite + sqlite-vec init on first run
-7. `wk1-foundation-perm-flow` — screen recording permission detection and prompt
-8. `wk1-foundation-tag` — tag `v0.1.0` and write a Week 1 retro to `DECISIONS.md`
+1. `wk1-foundation-window-hide` — close hides instead of quits
+2. `wk1-foundation-hotkey` — register both global hotkeys and wire events
+3. `wk1-foundation-settings-ui` — settings screen with three API key fields
+4. `wk1-foundation-stronghold` — Keychain-backed storage of keys
+5. `wk1-foundation-db` — SQLite + sqlite-vec init on first run
+6. `wk1-foundation-perm-flow` — screen recording permission detection and prompt
+7. `wk1-foundation-tag` — tag `v0.1.0` and write a Week 1 retro to `DECISIONS.md`
 
 ---
 
@@ -61,7 +54,7 @@ Nothing currently blocked.
 
 ## Recently completed
 
-(empty — Week 1 has not started yet)
+- `wk1-foundation-bootstrap` (2026-05-25) — Tauri 2 + Next.js scaffold per RUNBOOK §2. `pnpm tauri dev` launches the window; frontend, Rust plugins, scap, and shadcn all in. Deviations logged in ADR 011.
 
 ---
 

@@ -181,6 +181,25 @@ Lightweight ADRs. Append-only. Each decision gets a short context, the choice, a
 
 ---
 
+## ADR 011 — Bootstrap landed on Next.js 16, not 14
+
+**Date:** 2026-05-25
+**Status:** Accepted
+
+**Context:** RUNBOOK §2 bootstraps with `pnpm create next-app@latest`, and the stack docs (README, ARCHITECTURE) name "Next.js 14". As of bootstrap, `@latest` resolves to Next.js 16.2.6 (React 19.2, Tailwind 4). The scaffold also differs from the runbook in two minor ways: `next.config.ts` instead of `.mjs`, and shadcn's CLI no longer exposes a base-color flag (defaults to `neutral`; we kept it since theming is a Week 6 task).
+
+**Decision:** Build on Next.js 16 / React 19 / Tailwind 4. Static export (`output: 'export'`, `images.unoptimized`) verified working — `pnpm build` emits `out/`. Treat the "Next.js 14" references as historical; the static-export constraints in ARCHITECTURE.md still hold.
+
+**Rationale:**
+- No reason to pin an older major when the static-export contract is unchanged.
+- React 19 is supported by shadcn and the Tauri plugins.
+
+**Also recorded here:** crate renamed `app` → `lume` (lib `lume_lib`); bundle identifier set to `com.getmobilehq.lume` (was the placeholder `com.tauri.dev`).
+
+**Revisit if:** a dependency in the pipeline (Anthropic/Deepgram/Voyage SDKs) or a Tauri plugin proves incompatible with React 19 / Next 16.
+
+---
+
 ## How to add an ADR
 
 Copy the template below, append to the bottom of this file, give it the next number.
