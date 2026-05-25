@@ -219,6 +219,23 @@ Lightweight ADRs. Append-only. Each decision gets a short context, the choice, a
 
 ---
 
+## ADR 013 — Dev server on port 1420, not 3000
+
+**Date:** 2026-05-25
+**Status:** Accepted
+
+**Context:** RUNBOOK §2 set Tauri's `devUrl` to `http://localhost:3000` and the `dev` script to plain `next dev`. On this machine another long-running service occupies port 3000, so `next dev` silently fell back to 3001 while Tauri kept loading `:3000` — the webview rendered the other app's 404 instead of Lume.
+
+**Decision:** Pin the dev server to port 1420 (Tauri's conventional dev port): `next dev -p 1420` in `package.json`, and `devUrl: http://localhost:1420` in `tauri.conf.json`.
+
+**Rationale:**
+- 1420 is far less likely to collide than 3000.
+- The explicit `-p` makes `next dev` fail loudly on a conflict (EADDRINUSE) instead of silently picking another port and desyncing from `devUrl`.
+
+**Revisit if:** we ever need multiple Lume dev servers at once (then make the port configurable).
+
+---
+
 ## How to add an ADR
 
 Copy the template below, append to the bottom of this file, give it the next number.
