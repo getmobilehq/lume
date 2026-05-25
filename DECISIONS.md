@@ -200,6 +200,25 @@ Lightweight ADRs. Append-only. Each decision gets a short context, the choice, a
 
 ---
 
+## ADR 012 — Tray → frontend navigation via a `navigate` event
+
+**Date:** 2026-05-25
+**Status:** Accepted
+
+**Context:** The tray menu (Library / Settings) must change what the single static-export window shows. Routing is client-side (App Router), so Rust can't push a route directly. Two options: have Rust load a different URL into the webview, or have Rust emit an event the frontend turns into a `router.push`.
+
+**Decision:** Rust emits a `navigate` event carrying the route string; a `<TrayNavigation />` client component (mounted in the root layout) listens and calls `router.push`. Tray handlers first `show()` + `set_focus()` the `main` window, then emit. Quit calls `app.exit(0)`.
+
+**Rationale:**
+- Keeps routing entirely client-side — no full reload, consistent with the static-export constraint.
+- The same `navigate` event is reusable by the upcoming global-hotkey task (e.g. `⌃⌥L` → library) without new plumbing.
+
+**Also recorded here:** settings live at the flat route `/settings`, not the `app/(settings)/` route group sketched in RUNBOOK §4 — two route groups (`(library)` and `(settings)`) would both resolve to `/` and collide. Library stays at `/` (`app/page.tsx`).
+
+**Revisit if:** we move to multiple native windows (one per view), which would replace event-routing with per-window URLs.
+
+---
+
 ## How to add an ADR
 
 Copy the template below, append to the bottom of this file, give it the next number.
