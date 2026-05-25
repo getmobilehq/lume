@@ -28,18 +28,17 @@ Goal: a Tauri 2 + Next.js app that launches, sits in the menu bar, responds to a
 
 ## Current task (in progress)
 
-**`wk1-foundation-settings-ui`** — settings screen with three API key fields.
+**`wk1-foundation-stronghold`** — Keychain-backed storage of the three API keys.
 
-Done criteria: `/settings` shows fields for Anthropic, Deepgram, and Voyage keys with save; values held in component state for now (Keychain persistence is the next task, `wk1-foundation-stronghold`).
+Done criteria: keys entered in `/settings` persist via `tauri-plugin-stronghold` (Keychain), survive relaunch, and load back into the form on mount; nothing written to disk in plaintext.
 
 ---
 
 ## Up next (priority order)
 
-1. `wk1-foundation-stronghold` — Keychain-backed storage of keys
-2. `wk1-foundation-db` — SQLite + sqlite-vec init on first run
-3. `wk1-foundation-perm-flow` — screen recording permission detection and prompt
-4. `wk1-foundation-tag` — tag `v0.1.0` and write a Week 1 retro to `DECISIONS.md`
+1. `wk1-foundation-db` — SQLite + sqlite-vec init on first run
+2. `wk1-foundation-perm-flow` — screen recording permission detection and prompt
+3. `wk1-foundation-tag` — tag `v0.1.0` and write a Week 1 retro to `DECISIONS.md`
 
 ---
 
@@ -51,6 +50,7 @@ Nothing currently blocked.
 
 ## Recently completed
 
+- `wk1-foundation-settings-ui` (2026-05-25) — `/settings` form with masked Anthropic/Deepgram/Voyage key fields (shadcn input/label), zod validation, Save. Keys held in component state; persistence is `wk1-foundation-stronghold`. Verified in app. Also: dev server moved to port 1420 (ADR 013) after a 3000 collision, and the tray now uses a black template ring icon for menu-bar visibility.
 - `wk1-foundation-hotkey` (2026-05-25) — registered `⌃⌥R` (emits `record-toggle`, logged via `log::info!` until capture exists) and `⌃⌥L` (shows+focuses library) via `tauri-plugin-global-shortcut`, hard-coded in lib.rs. Verified both in `pnpm tauri dev`.
 - `wk1-foundation-window-hide` (2026-05-25) — close-requested on the main window hides it and prevents close (`on_window_event` in lib.rs); app stays alive in the tray, tray items re-show it, Quit still exits. Verified in `pnpm tauri dev`.
 - `wk1-foundation-tray` (2026-05-25) — tray icon with Library / Settings / Quit. Library/Settings emit a `navigate` event that the frontend routes; Quit exits. Verified all four behaviours in `pnpm tauri dev`. Navigation pattern logged in ADR 012.
