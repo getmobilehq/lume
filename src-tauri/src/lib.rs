@@ -55,8 +55,13 @@ pub fn run() {
             let quit_i = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&library_i, &settings_i, &quit_i])?;
 
+            // Monochrome template icon: macOS renders it black on a light menu
+            // bar and white on a dark one, so it stays crisp and visible.
+            let tray_icon = tauri::image::Image::from_bytes(include_bytes!("../icons/tray.png"))?;
+
             TrayIconBuilder::with_id("main")
-                .icon(app.default_window_icon().unwrap().clone())
+                .icon(tray_icon)
+                .icon_as_template(true)
                 .tooltip("Lume")
                 .menu(&menu)
                 .show_menu_on_left_click(true)
