@@ -108,7 +108,12 @@ pub fn run() {
                 }
             }
         })
-        .invoke_handler(tauri::generate_handler![commands::vault_password])
+        .invoke_handler(tauri::generate_handler![
+            commands::vault_password,
+            commands::screen_recording_permission,
+            commands::request_screen_recording_permission,
+            commands::restart_app,
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

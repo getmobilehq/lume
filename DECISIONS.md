@@ -273,6 +273,23 @@ Lightweight ADRs. Append-only. Each decision gets a short context, the choice, a
 
 ---
 
+## ADR 016 — Screen Recording permission: dev-build TCC caveat
+
+**Date:** 2026-05-26
+**Status:** Accepted
+
+**Context:** The first-run flow detects Screen Recording permission via `scap::has_permission()` (`CGPreflightScreenCaptureAccess`), prompts via `scap::request_permission()` (`CGRequestScreenCaptureAccess`), and restarts on grant. In `pnpm tauri dev` the running executable is the bare, unsigned binary `target/debug/lume` — macOS attributes its screen-recording request to the launching process and does not reliably add a `lume` entry to the Screen & System Audio Recording list, so the binary can't be toggled there directly.
+
+**Decision:** Ship the detect→instruct→restart flow as-is. In dev, verify the *granted* path by launching from a terminal that already holds Screen Recording permission (the binary inherits it); the live grant against a listed "Lume" entry is validated when we build the signed `.app` (Week 6, ADR 010). Both branches were verified this way: gate appears when permission is absent; Library passes through when granted.
+
+**Consequences:**
+- No code change needed for production — a signed/notarised `Lume.app` registers correctly as "Lume" in the TCC list.
+- The flow re-checks only on launch (not live), matching macOS behaviour; the Restart Lume button (`app.restart()`) is the apply step.
+
+**Revisit if:** the signed build still mis-registers — then add an explicit capture attempt to force TCC registration.
+
+---
+
 ## How to add an ADR
 
 Copy the template below, append to the bottom of this file, give it the next number.

@@ -21,22 +21,22 @@ Goal: a Tauri 2 + Next.js app that launches, sits in the menu bar, responds to a
 - [x] Settings window accepts three API keys; stored in Keychain via stronghold
 - [x] SQLite database created at the app data dir (`db.sqlite`)
 - [x] sqlite-vec loaded; smoke test inserts and queries one vector
-- [ ] First-run flow: detects missing screen recording permission, instructs user, restarts on grant
+- [x] First-run flow: detects missing screen recording permission, instructs user, restarts on grant
 - [ ] All Week 1 code linted, formatted, and merged to `main`
 
 ---
 
 ## Current task (in progress)
 
-**`wk1-foundation-perm-flow`** — screen recording permission detection and prompt.
+**`wk1-foundation-tag`** — close Week 1: tag `v0.1.0` and write a Week 1 retro to `DECISIONS.md`.
 
-Done criteria: detect missing Screen Recording permission on first run, instruct the user to grant it, and restart the app once granted (Tauri doesn't pick it up live — see RUNBOOK gotcha).
+Done criteria: all Week 1 code linted/formatted/on `main`; a Week 1 retro appended to `DECISIONS.md`; an annotated `v0.1.0` tag created and pushed.
 
 ---
 
 ## Up next (priority order)
 
-1. `wk1-foundation-tag` — tag `v0.1.0` and write a Week 1 retro to `DECISIONS.md`
+(none — `wk1-foundation-tag` closes Week 1)
 
 ---
 
@@ -48,6 +48,7 @@ Nothing currently blocked.
 
 ## Recently completed
 
+- `wk1-foundation-perm-flow` (2026-05-26) — Library page gated on Screen Recording permission (`scap::has_permission`); when missing, shows setup instructions with Open Settings (`scap::request_permission` + opens the pane) and Restart Lume (`app.restart()`). Verified both paths: gate when absent, pass-through when granted. Dev caveat (unsigned binary not listed in TCC) in ADR 016.
 - `wk1-foundation-db` (2026-05-26) — SQLite at `db.sqlite` (app data dir, WAL) with the full DATA.md schema applied as migration 0001; sqlite-vec loaded via rusqlite auto-extension; startup smoke test inserts + reads back one vector. Connection held in managed state. Replaced `tauri-plugin-sql` with rusqlite (links conflict + extension loading) — ADR 015.
 - `wk1-foundation-stronghold` (2026-05-26) — API keys persist in a Stronghold vault (argon2) unlocked by a random password kept in the macOS Keychain via the `keyring` crate (`vault_password` command, `LumeError`). Settings form loads keys on mount, saves on submit. Keys survive relaunch; verified. Vault access opened once per session to avoid a StrictMode double-load race. See ADR 014.
 - `wk1-foundation-settings-ui` (2026-05-25) — `/settings` form with masked Anthropic/Deepgram/Voyage key fields (shadcn input/label), zod validation, Save. Keys held in component state; persistence is `wk1-foundation-stronghold`. Verified in app. Also: dev server moved to port 1420 (ADR 013) after a 3000 collision, and the tray now uses a black template ring icon for menu-bar visibility.

@@ -21,3 +21,30 @@ pub fn vault_password() -> Result<String> {
         Err(err) => Err(err.into()),
     }
 }
+
+/// Whether the OS has granted Screen Recording permission.
+#[tauri::command]
+pub fn screen_recording_permission() -> bool {
+    scap::has_permission()
+}
+
+/// Trigger the macOS Screen Recording prompt (first run registers the app) and,
+/// if still not granted, open the Screen Recording settings pane so the user can
+/// enable Lume. The grant only takes effect after a restart.
+#[tauri::command]
+pub fn request_screen_recording_permission() -> bool {
+    let granted = scap::request_permission();
+    if !granted {
+        let _ = std::process::Command::new("open")
+            .arg("x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture")
+            .spawn();
+    }
+    granted
+}
+
+/// Relaunch the app so a freshly granted permission is picked up (Tauri does not
+/// observe it live).
+#[tauri::command]
+pub fn restart_app(app: tauri::AppHandle) {
+    app.restart();
+}
