@@ -290,6 +290,28 @@ Lightweight ADRs. Append-only. Each decision gets a short context, the choice, a
 
 ---
 
+## Week 1 retro
+
+**Date:** 2026-05-26
+**Tag:** `v0.1.0`
+
+**Shipped (all Week 1 done criteria met):** Tauri 2 + Next.js scaffold; tray with Library/Settings/Quit; close-to-hide; global hotkeys `⌃⌥R` (record-toggle) / `⌃⌥L` (library); settings UI with three API-key fields; Keychain-unlocked Stronghold vault persisting those keys; SQLite + sqlite-vec with the full DATA.md schema and a startup smoke test; first-run Screen Recording permission flow.
+
+**What deviated from the plan (ADRs 011–016):**
+- Next.js **16**, not 14 (`@latest`); dev server on **1420**, not 3000 (local 3000 was taken).
+- **rusqlite replaced `tauri-plugin-sql`** — the plugin can't load extensions and conflicts on `libsqlite3-sys`. Consequence: **all DB access is Rust-side via commands**, so ARCHITECTURE.md's `lib/db.ts` becomes typed wrappers around commands, not direct SQL.
+- Secrets: Stronghold vault on disk, unlocked by a **random password in the macOS Keychain** (the docs' "Keychain" was conceptual).
+- Tray uses a **black template ring** icon for menu-bar visibility.
+
+**Surprises / drag:** the macOS permission story ate the most time — unsigned dev binaries don't list themselves in the Screen Recording TCC pane, so the granted path can only be exercised via an already-permitted terminal until we ship a signed `.app` (ADR 016). React's dev double-mount also raced the Stronghold snapshot ("no data present") until the vault was opened once per session (ADR 014).
+
+**Carried into Week 2:**
+- **Path discrepancy:** everything lives in `~/Library/Application Support/com.getmobilehq.lume/` (Tauri's identifier-based `app_data_dir`), not the `…/Lume/` path written in DATA.md/ARCHITECTURE.md. Reconcile the docs or override the data dir.
+- Signed-build validation of the screen-recording grant is deferred to Week 6.
+- Minor: a stray `~/package-lock.json` makes Next.js guess the wrong workspace root (harmless warning; silence with `turbopack.root` if it annoys).
+
+---
+
 ## How to add an ADR
 
 Copy the template below, append to the bottom of this file, give it the next number.

@@ -6,9 +6,9 @@ The agent reads this at the start of every session to know where the build is an
 
 ## Current milestone
 
-**Week 1 — Foundation**
+**Week 1 — Foundation ✅ complete (`v0.1.0`, 2026-05-26)**
 
-Goal: a Tauri 2 + Next.js app that launches, sits in the menu bar, responds to a global hotkey, and stores configuration securely.
+Goal (met): a Tauri 2 + Next.js app that launches, sits in the menu bar, responds to a global hotkey, and stores configuration securely.
 
 ## Done criteria for Week 1
 
@@ -22,21 +22,19 @@ Goal: a Tauri 2 + Next.js app that launches, sits in the menu bar, responds to a
 - [x] SQLite database created at the app data dir (`db.sqlite`)
 - [x] sqlite-vec loaded; smoke test inserts and queries one vector
 - [x] First-run flow: detects missing screen recording permission, instructs user, restarts on grant
-- [ ] All Week 1 code linted, formatted, and merged to `main`
+- [x] All Week 1 code linted, formatted, and merged to `main`
 
 ---
 
 ## Current task (in progress)
 
-**`wk1-foundation-tag`** — close Week 1: tag `v0.1.0` and write a Week 1 retro to `DECISIONS.md`.
-
-Done criteria: all Week 1 code linted/formatted/on `main`; a Week 1 retro appended to `DECISIONS.md`; an annotated `v0.1.0` tag created and pushed.
+**Week 1 complete (`v0.1.0`).** Awaiting Week 2 milestone definition (capture: hotkey → scap recording → MP4). Update this section when Week 2 is scoped.
 
 ---
 
 ## Up next (priority order)
 
-(none — `wk1-foundation-tag` closes Week 1)
+(none — Week 1 closed; Week 2 not yet scoped)
 
 ---
 
@@ -48,6 +46,7 @@ Nothing currently blocked.
 
 ## Recently completed
 
+- `wk1-foundation-tag` (2026-05-26) — Week 1 closed: all code linted/formatted/on `main`, Week 1 retro added to `DECISIONS.md`, annotated `v0.1.0` tag created and pushed.
 - `wk1-foundation-perm-flow` (2026-05-26) — Library page gated on Screen Recording permission (`scap::has_permission`); when missing, shows setup instructions with Open Settings (`scap::request_permission` + opens the pane) and Restart Lume (`app.restart()`). Verified both paths: gate when absent, pass-through when granted. Dev caveat (unsigned binary not listed in TCC) in ADR 016.
 - `wk1-foundation-db` (2026-05-26) — SQLite at `db.sqlite` (app data dir, WAL) with the full DATA.md schema applied as migration 0001; sqlite-vec loaded via rusqlite auto-extension; startup smoke test inserts + reads back one vector. Connection held in managed state. Replaced `tauri-plugin-sql` with rusqlite (links conflict + extension loading) — ADR 015.
 - `wk1-foundation-stronghold` (2026-05-26) — API keys persist in a Stronghold vault (argon2) unlocked by a random password kept in the macOS Keychain via the `keyring` crate (`vault_password` command, `LumeError`). Settings form loads keys on mount, saves on submit. Keys survive relaunch; verified. Vault access opened once per session to avoid a StrictMode double-load race. See ADR 014.
