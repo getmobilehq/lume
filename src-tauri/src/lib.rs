@@ -1,5 +1,8 @@
 mod commands;
+mod db;
 mod error;
+
+use std::sync::Mutex;
 
 use tauri::{
     menu::{Menu, MenuItem},
@@ -60,6 +63,11 @@ pub fn run() {
             let salt_path = data_dir.join("salt.txt");
             app.handle()
                 .plugin(tauri_plugin_stronghold::Builder::with_argon2(&salt_path).build())?;
+
+            // SQLite (+ sqlite-vec) lives beside the vault; hold the connection
+            // in managed state for future query commands.
+            let conn = db::init(&data_dir.join("db.sqlite"))?;
+            app.manage(Mutex::new(conn));
 
             let library_i = MenuItem::with_id(app, "library", "Library", true, None::<&str>)?;
             let settings_i = MenuItem::with_id(app, "settings", "Settings", true, None::<&str>)?;

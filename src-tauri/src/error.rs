@@ -6,6 +6,9 @@ use serde::{Serialize, Serializer};
 pub enum LumeError {
     #[error("keychain error: {0}")]
     Keychain(#[from] keyring::Error),
+
+    #[error("database error: {0}")]
+    Database(#[from] rusqlite::Error),
 }
 
 impl Serialize for LumeError {

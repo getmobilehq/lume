@@ -255,6 +255,24 @@ Lightweight ADRs. Append-only. Each decision gets a short context, the choice, a
 
 ---
 
+## ADR 015 — rusqlite (not tauri-plugin-sql) for the database layer
+
+**Date:** 2026-05-26
+**Status:** Accepted; supersedes the `tauri-plugin-sql` choice implied by RUNBOOK §2
+
+**Context:** We need the sqlite-vec extension loaded. `tauri-plugin-sql` (sqlx) can't load SQLite extensions, and SKILLS.md already anticipated using rusqlite. Adding `rusqlite` (bundled) alongside `tauri-plugin-sql` fails to build: both `rusqlite`'s and sqlx's `libsqlite3-sys` declare `links = "sqlite3"`, and Cargo forbids two packages linking the same native library — independent of version.
+
+**Decision:** Use `rusqlite` (bundled) as the sole database layer and remove `tauri-plugin-sql` (and the JS `@tauri-apps/plugin-sql`). sqlite-vec is registered once as a SQLite auto-extension (`sqlite3_auto_extension`) before any connection opens, so every connection has `vec0`. The connection is opened in `db.rs`, schema applied from `migrations/0001_init.sql`, and held in Tauri managed state (`Mutex<Connection>`) for future query commands.
+
+**Consequences:**
+- All DB access is Rust-side via commands, not JS-side plugin queries. ARCHITECTURE.md's "lib/db.ts" becomes typed wrappers around those commands rather than direct SQL.
+- `db.sqlite` lives in `app_data_dir()` (`~/Library/Application Support/com.getmobilehq.lume/`), beside the Stronghold vault — consistent with ADR 014, and differs from the `…/Lume/` path written in DATA.md/ARCHITECTURE.md.
+- Migrations run on startup; `settings.schema_version` tracks the version (currently 1).
+
+**Revisit if:** we later want JS-side ad-hoc SQL badly enough to ship sqlite-vec as a loadable dylib for sqlx — unlikely.
+
+---
+
 ## How to add an ADR
 
 Copy the template below, append to the bottom of this file, give it the next number.

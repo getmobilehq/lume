@@ -26,9 +26,6 @@ dependencies:
   '@tauri-apps/plugin-notification':
     specifier: ^2.3.3
     version: 2.3.3
-  '@tauri-apps/plugin-sql':
-    specifier: ^2.4.0
-    version: 2.4.0
   '@tauri-apps/plugin-store':
     specifier: ^2.4.3
     version: 2.4.3
@@ -1467,12 +1464,6 @@ packages:
 
   /@tauri-apps/plugin-notification@2.3.3:
     resolution: {integrity: sha512-Zw+ZH18RJb41G4NrfHgIuofJiymusqN+q8fGUIIV7vyCH+5sSn5coqRv/MWB9qETsUs97vmU045q7OyseCV3Qg==}
-    dependencies:
-      '@tauri-apps/api': 2.11.0
-    dev: false
-
-  /@tauri-apps/plugin-sql@2.4.0:
-    resolution: {integrity: sha512-SIICc5JlnK6OrBZzOw7MmhXHPlmASpt5zLWIu10WW4kLr5cDYOXHdV2MoCgYQkgZLQfyBYgF3SQa5XCisUiQkw==}
     dependencies:
       '@tauri-apps/api': 2.11.0
     dev: false
