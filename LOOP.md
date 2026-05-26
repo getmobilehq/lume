@@ -6,35 +6,44 @@ The agent reads this at the start of every session to know where the build is an
 
 ## Current milestone
 
-**Week 1 — Foundation ✅ complete (`v0.1.0`, 2026-05-26)**
+**Sprint 1 — Capture (Weeks 2–3).** Full plan: `lume-sprint-plan.md`.
+_(Sprint 0 / Week 1 — Foundation: ✅ complete, tagged `v0.1.0` on 2026-05-26.)_
 
-Goal (met): a Tauri 2 + Next.js app that launches, sits in the menu bar, responds to a global hotkey, and stores configuration securely.
+Goal: pressing the hotkey produces a clean MP4 of the active browser window with synced system audio, written to the session directory, with a session row in SQLite.
 
-## Done criteria for Week 1
+## Done criteria for Sprint 1
 
-- [x] Repo bootstrapped per `RUNBOOK.md §2`
-- [x] `pnpm tauri dev` launches a window
-- [x] Tray icon visible, with menu: Library / Settings / Quit
-- [x] Window hides on close (does not quit), tray menu re-opens it
-- [x] Global hotkey `⌃⌥R` registered; emits a `record-toggle` event
-- [x] Global hotkey `⌃⌥L` registered; opens the library window
-- [x] Settings window accepts three API keys; stored in Keychain via stronghold
-- [x] SQLite database created at the app data dir (`db.sqlite`)
-- [x] sqlite-vec loaded; smoke test inserts and queries one vector
-- [x] First-run flow: detects missing screen recording permission, instructs user, restarts on grant
-- [x] All Week 1 code linted, formatted, and merged to `main`
+- [ ] A 5-min YouTube video captures; the MP4 plays in QuickTime with synced audio
+- [ ] Session row transitions `recording` → `processing` → (stub) `ready`
+- [ ] Tray icon reflects state (idle / recording / processing)
+- [ ] Start/stop reliable 10× in a row — no leaks or crashes
 
 ---
 
 ## Current task (in progress)
 
-**Week 1 complete (`v0.1.0`).** Awaiting Week 2 milestone definition (capture: hotkey → scap recording → MP4). Update this section when Week 2 is scoped.
+**`S1-01a`** — scap capturer lifecycle: init, start, pull frames, stop (capture the full display first to prove the frame stream end-to-end). Window targeting is `S1-01b`/`S1-02`.
+
+Done criteria: a Rust command starts/stops a scap capture of the main display, frames flow on a channel without leaking, and stop tears down cleanly.
 
 ---
 
 ## Up next (priority order)
 
-(none — Week 1 closed; Week 2 not yet scoped)
+Groomed from the `lume-sprint-plan.md` S1 backlog; tickets that felt >4h are split (suffixed a/b).
+
+1. `S1-01b` — target a specific window with scap (foreground window)
+2. `S1-02` — detect the active **browser** window by process name; feed it to `S1-01b`
+3. `S1-03` — system audio capture via ScreenCaptureKit; confirm sync
+4. `S1-04a` — MP4 video: pipe scap frames → ffmpeg, H.264 30fps 1280×720 (no audio yet)
+5. `S1-04b` — mux AAC system audio into the MP4; verify A/V sync
+6. `S1-05` — session lifecycle: insert row (ulid) on start, update status on stop
+7. `S1-08` — persist to `{app_data_dir}/sessions/{id}/recording.mp4` (no hardcoded paths)
+8. `S1-06a` — tray icon state swap (idle / recording / processing template icons)
+9. `S1-06b` — recording animation on the tray icon
+10. `S1-07` — soft warning if a recording exceeds 90 min
+11. `S1-09` — crash recovery: orphaned `recording` rows on launch → `error`
+12. `S1-10` — memory-profile a 60-min capture (cap ~500MB, no leaks)
 
 ---
 
@@ -60,6 +69,8 @@ Nothing currently blocked.
 
 ## Notes for the agent
 
-- Don't skip ahead. The hotkey task assumes settings exist for hotkey customisation later, but Week 1 uses hard-coded defaults
-- Don't add UI polish during Week 1. Default shadcn looks. Polish is Week 6
-- If a task takes longer than expected, write the surprise in `DECISIONS.md` before moving on
+- Paths: use Tauri's `app_data_dir()` (= `~/Library/Application Support/com.getmobilehq.lume/`, where the vault + db already live), never hardcoded paths. DATA.md/ARCHITECTURE.md still say `…/Lume/` — stale; reconcile when convenient.
+- DB access is Rust-side via commands (ADR 015) — `lib/db.ts` is a typed wrapper over commands, not direct SQL.
+- Vision/RAG model is `claude-sonnet-4-6` (the repo docs were corrected). The sprint plan still says "Sonnet 4.7" in S3/S5 — treat as 4.6 unless told otherwise.
+- macOS capture risk: scap window-targeting differs across Chrome / Arc / Safari — expect per-browser workarounds.
+- If a task takes longer than expected, write the surprise in `DECISIONS.md` before moving on.
