@@ -9,6 +9,9 @@ pub enum LumeError {
 
     #[error("database error: {0}")]
     Database(#[from] rusqlite::Error),
+
+    #[error("capture error: {0}")]
+    Capture(String),
 }
 
 impl Serialize for LumeError {

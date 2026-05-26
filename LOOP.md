@@ -22,9 +22,9 @@ Goal: pressing the hotkey produces a clean MP4 of the active browser window with
 
 ## Current task (in progress)
 
-**`S1-01a`** — scap capturer lifecycle: init, start, pull frames, stop (capture the full display first to prove the frame stream end-to-end). Window targeting is `S1-01b`/`S1-02`.
+**`S1-01b`** — target a specific window with scap (foreground window), instead of the full main display.
 
-Done criteria: a Rust command starts/stops a scap capture of the main display, frames flow on a channel without leaking, and stop tears down cleanly.
+Done criteria: `start_capture` targets a chosen on-screen window via `scap` `Target::Window`; capturing that window produces frames; falls back cleanly if the target can't be resolved.
 
 ---
 
@@ -32,8 +32,7 @@ Done criteria: a Rust command starts/stops a scap capture of the main display, f
 
 Groomed from the `lume-sprint-plan.md` S1 backlog; tickets that felt >4h are split (suffixed a/b).
 
-1. `S1-01b` — target a specific window with scap (foreground window)
-2. `S1-02` — detect the active **browser** window by process name; feed it to `S1-01b`
+1. `S1-02` — detect the active **browser** window by process name; feed it to `S1-01b`
 3. `S1-03` — system audio capture via ScreenCaptureKit; confirm sync
 4. `S1-04a` — MP4 video: pipe scap frames → ffmpeg, H.264 30fps 1280×720 (no audio yet)
 5. `S1-04b` — mux AAC system audio into the MP4; verify A/V sync
@@ -55,6 +54,7 @@ Nothing currently blocked.
 
 ## Recently completed
 
+- `S1-01a` (2026-05-26) — scap capturer lifecycle. `start_capture`/`stop_capture` commands; capturer built + owned inside a worker thread (mac engine isn't `Send`), stopped via an `AtomicBool`; start success reported back so permission errors surface. `CaptureState` in managed state; frontend `CaptureController` toggles on `record-toggle`. Verified from a permitted terminal: 514 frames over ~18s and a 26-frame burst, two clean cycles. Captures full main display (window targeting is `S1-01b`).
 - `wk1-foundation-tag` (2026-05-26) — Week 1 closed: all code linted/formatted/on `main`, Week 1 retro added to `DECISIONS.md`, annotated `v0.1.0` tag created and pushed.
 - `wk1-foundation-perm-flow` (2026-05-26) — Library page gated on Screen Recording permission (`scap::has_permission`); when missing, shows setup instructions with Open Settings (`scap::request_permission` + opens the pane) and Restart Lume (`app.restart()`). Verified both paths: gate when absent, pass-through when granted. Dev caveat (unsigned binary not listed in TCC) in ADR 016.
 - `wk1-foundation-db` (2026-05-26) — SQLite at `db.sqlite` (app data dir, WAL) with the full DATA.md schema applied as migration 0001; sqlite-vec loaded via rusqlite auto-extension; startup smoke test inserts + reads back one vector. Connection held in managed state. Replaced `tauri-plugin-sql` with rusqlite (links conflict + extension loading) — ADR 015.

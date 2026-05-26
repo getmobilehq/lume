@@ -1,3 +1,4 @@
+mod capture;
 mod commands;
 mod db;
 mod error;
@@ -69,6 +70,8 @@ pub fn run() {
             let conn = db::init(&data_dir.join("db.sqlite"))?;
             app.manage(Mutex::new(conn));
 
+            app.manage(capture::CaptureState::default());
+
             let library_i = MenuItem::with_id(app, "library", "Library", true, None::<&str>)?;
             let settings_i = MenuItem::with_id(app, "settings", "Settings", true, None::<&str>)?;
             let quit_i = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
@@ -113,6 +116,8 @@ pub fn run() {
             commands::screen_recording_permission,
             commands::request_screen_recording_permission,
             commands::restart_app,
+            capture::start_capture,
+            capture::stop_capture,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
